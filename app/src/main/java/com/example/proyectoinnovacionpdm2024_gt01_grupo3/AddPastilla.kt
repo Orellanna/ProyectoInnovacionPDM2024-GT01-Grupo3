@@ -82,11 +82,11 @@ class AddPastilla : AppCompatActivity() {
             val newRowId = db?.insert(ConexionDataBaseHelper.TABLE_PILLS, null, values)
 
             if (newRowId != -1L) {
-                Toast.makeText(this, "Pill saved with id: $newRowId", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Pastilla Guardada: $newRowId", Toast.LENGTH_SHORT).show()
                 setAlarm(name, description, frequency, startTime)
                 finish()
             } else {
-                Toast.makeText(this, "Error saving pill", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error al Guardar la Pastilla", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -117,7 +117,7 @@ class AddPastilla : AppCompatActivity() {
                 add(Calendar.DATE, 1)
             } else {
                 // Retroceder un minuto
-                add(Calendar.MINUTE, -1)
+                add(Calendar.MINUTE, -2)
             }
 
             // Convertir la frecuencia de horas a milisegundos

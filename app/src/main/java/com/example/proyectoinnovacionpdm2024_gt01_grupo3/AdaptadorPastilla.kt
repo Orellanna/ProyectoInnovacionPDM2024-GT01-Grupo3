@@ -17,7 +17,7 @@ class PillAdapter(private val pills: List<Pill>) : RecyclerView.Adapter<PillAdap
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PillViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.pill_item, parent, false) // Cambiado de pill_item a item_pill
+            .inflate(R.layout.pill_item, parent, false)
         return PillViewHolder(itemView)
     }
 
