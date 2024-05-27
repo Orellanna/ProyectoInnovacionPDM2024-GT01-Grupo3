@@ -1,5 +1,6 @@
 package com.example.proyectoinnovacionpdm2024_gt01_grupo3
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.app.PendingIntent
@@ -11,12 +12,16 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.TextInputEditText
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class AddPastilla : AppCompatActivity() {
 
     private lateinit var dbHelper: ConexionDataBaseHelper
+    private lateinit var editTextStartDate: EditText
+    private lateinit var editTextEndDate: EditText
+    private val calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,40 +29,20 @@ class AddPastilla : AppCompatActivity() {
 
         dbHelper = ConexionDataBaseHelper(this)
 
-        val editTextName = findViewById<TextInputEditText>(R.id.editTextName)
-        val editTextDescription = findViewById<TextInputEditText>(R.id.editTextDescription)
-        val editTextStartDate = findViewById<TextInputEditText>(R.id.editTextStartDate)
-        val editTextEndDate = findViewById<TextInputEditText>(R.id.editTextEndDate)
-        val editTextFrequency = findViewById<TextInputEditText>(R.id.editTextFrequency)
-        val editTextStartTime = findViewById<TextInputEditText>(R.id.editTextStartTime)
+        val editTextName = findViewById<EditText>(R.id.editTextName)
+        val editTextDescription = findViewById<EditText>(R.id.editTextDescription)
+        editTextStartDate = findViewById(R.id.editTextStartDate)
+        editTextEndDate = findViewById(R.id.editTextEndDate)
+        val editTextFrequency = findViewById<EditText>(R.id.editTextFrequency)
+        val editTextStartTime = findViewById<EditText>(R.id.editTextStartTime)
         val buttonSave = findViewById<Button>(R.id.buttonSave)
 
-        val calendar = Calendar.getInstance()
-
         editTextStartDate.setOnClickListener {
-            val datePicker = DatePickerDialog(
-                this,
-                { _, year, month, dayOfMonth ->
-                    editTextStartDate.setText(String.format("%d-%02d-%02d", year, month + 1, dayOfMonth))
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            datePicker.show()
+            showDatePickerDialog(editTextStartDate)
         }
 
         editTextEndDate.setOnClickListener {
-            val datePicker = DatePickerDialog(
-                this,
-                { _, year, month, dayOfMonth ->
-                    editTextEndDate.setText(String.format("%d-%02d-%02d", year, month + 1, dayOfMonth))
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            datePicker.show()
+            showDatePickerDialog(editTextEndDate)
         }
 
         buttonSave.setOnClickListener {
@@ -82,18 +67,41 @@ class AddPastilla : AppCompatActivity() {
             val newRowId = db?.insert(ConexionDataBaseHelper.TABLE_PILLS, null, values)
 
             if (newRowId != -1L) {
-                Toast.makeText(this, "Pastilla Guardada: $newRowId", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Pill saved with id: $newRowId", Toast.LENGTH_SHORT).show()
                 setAlarm(name, description, frequency, startTime)
                 finish()
             } else {
-                Toast.makeText(this, "Error al Guardar la Pastilla", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error saving pill", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    private fun showDatePickerDialog(editText: EditText) {
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
+            calendar.set(Calendar.YEAR, year)
+            calendar.set(Calendar.MONTH, month)
+            calendar.set(Calendar.DAY_OF_MONTH, day)
+            updateDateInView(editText)
+        }
+
+        DatePickerDialog(
+            this, dateSetListener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
+    }
+
+    private fun updateDateInView(editText: EditText) {
+        val myFormat = "yyyy-MM-dd"
+        val sdf = SimpleDateFormat(myFormat, Locale.US)
+        editText.setText(sdf.format(calendar.time))
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
     private fun setAlarm(pillName: String, pillDescription: String, frequency: Int, startTime: String) {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, PastillaReceiver::class.java).apply {
+        val intent = Intent(this, AlarmReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
         }
@@ -106,7 +114,7 @@ class AddPastilla : AppCompatActivity() {
             val startHour = startTimeParts[0]
             val startMinute = startTimeParts[1]
 
-            // Calcular la hora y los minutos para la notificación
+            // Calcular la hora y los minutos para la alarma
             set(Calendar.HOUR_OF_DAY, startHour)
             set(Calendar.MINUTE, startMinute)
             set(Calendar.SECOND, 0)
@@ -115,21 +123,21 @@ class AddPastilla : AppCompatActivity() {
             if (now.after(this)) {
                 // Si ha pasado, programar para el día siguiente
                 add(Calendar.DATE, 1)
-            } else {
-                // Retroceder un minuto
-                add(Calendar.MINUTE, -2)
             }
-
-            // Convertir la frecuencia de horas a milisegundos
-            val interval = frequency * 60 * 60 * 1000L
-
-            // Programar la notificación con intervalo de repetición
-            alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                timeInMillis,
-                interval,
-                pendingIntent
-            )
         }
+
+        val notificationIntent = Intent(this, PastillaReceiver::class.java).apply {
+            putExtra("pill_name", pillName)
+            putExtra("pill_description", pillDescription)
+        }
+        val notificationPendingIntent = PendingIntent.getBroadcast(this, 1, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+
+        // Notificación 2 minutos antes
+        val notificationTime = calendar.timeInMillis - 2 * 60 * 1000
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, notificationPendingIntent)
+
+        // Alarma exacta a la hora indicada
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     }
 }
+

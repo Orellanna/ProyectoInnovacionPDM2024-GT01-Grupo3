@@ -2,6 +2,9 @@ package com.example.proyectoinnovacionpdm2024_gt01_grupo3
 
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,6 +12,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import java.util.Calendar
 
 class PastillaReceiver : BroadcastReceiver() {
 
@@ -16,10 +20,10 @@ class PastillaReceiver : BroadcastReceiver() {
     private val NOTIFICATION_ID = 123
 
     override fun onReceive(context: Context, intent: Intent) {
-        val pillName = intent.getStringExtra("pill_name") ?: "Pill"
-        val pillDescription = intent.getStringExtra("pill_description") ?: "Hora de tomar tu pastilla"
+        val pillName = intent.getStringExtra("pill_name") ?: "Pastilla"
+        val pillDescription = intent.getStringExtra("pill_description") ?: "Hora de tomar la pastilla"
 
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, "pill_reminder_channel")
             .setSmallIcon(R.drawable.ic_pill)
             .setContentTitle(pillName)
             .setContentText(pillDescription)
@@ -31,10 +35,10 @@ class PastillaReceiver : BroadcastReceiver() {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-               
                 return
             }
-            notify(NOTIFICATION_ID, builder.build())
+            notify(123, builder.build())
         }
     }
+
 }
