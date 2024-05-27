@@ -15,9 +15,9 @@ class ConexionDataBaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         const val COLUMN_NAME = "nombre"
         const val COLUMN_DESCRIPTION = "descripcion"
         const val COLUMN_START_DATE = "fecha_inicial"
-        const val COLUMN_END_DATE = "ficha_final"
+        const val COLUMN_END_DATE = "fecha_final"
         const val COLUMN_FREQUENCY = "frecuencia"
-        const val COLUMN_START_TIME = "fecha_inicial"
+        const val COLUMN_START_TIME = "hora_inicio"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
