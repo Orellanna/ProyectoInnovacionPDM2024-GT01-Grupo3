@@ -93,7 +93,7 @@ class AddPastilla : AppCompatActivity() {
 
     private fun setAlarm(pillName: String, pillDescription: String, frequency: Int, startTime: String) {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, PillReminderReceiver::class.java).apply {
+        val intent = Intent(this, PastillaReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
         }
