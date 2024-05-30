@@ -13,7 +13,11 @@
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:title="MediRecordatorios"
+        android:titleTextColor="@android:color/white"
+        android:titleTextAppearance="@style/ToolbarTitle"
+        android:layout_alignParentTop="true" />
 
     <!-- RecyclerView con fondo y margenes -->
     <androidx.recyclerview.widget.RecyclerView
@@ -22,10 +26,8 @@
         android:layout_height="match_parent"
         android:layout_above="@id/fab"
         android:layout_below="@id/toolbar"
-        android:layout_margin="16dp"
-        android:background="@android:color/white"
-        android:clipToPadding="false"
-        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:padding="4dp"
         tools:listitem="@layout/pill_item" />
 
     <!-- Floating Action Button (FAB) personalizado -->
@@ -38,5 +40,7 @@
         android:layout_margin="16dp"
         android:src="@drawable/baseline_add_24"
         android:backgroundTint="@color/colorAccent"
-        android:tint="@android:color/white" />
+        android:tint="@android:color/white"
+        android:contentDescription="Agregar nuevo recordatorio"
+        android:elevation="6dp" />
 </RelativeLayout>

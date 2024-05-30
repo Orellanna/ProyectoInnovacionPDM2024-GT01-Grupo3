@@ -106,7 +106,7 @@ class AddPastilla : AppCompatActivity() {
             putExtra("pill_description", pillDescription)
         }
 
-        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val startTimeParts = startTime.split(":").map { it.toInt() }
         val calendar = Calendar.getInstance().apply {
@@ -114,14 +114,11 @@ class AddPastilla : AppCompatActivity() {
             val startHour = startTimeParts[0]
             val startMinute = startTimeParts[1]
 
-            // Calcular la hora y los minutos para la alarma
             set(Calendar.HOUR_OF_DAY, startHour)
             set(Calendar.MINUTE, startMinute)
             set(Calendar.SECOND, 0)
 
-            // Verificar si la hora especificada ya ha pasado hoy
             if (now.after(this)) {
-                // Si ha pasado, programar para el día siguiente
                 add(Calendar.DATE, 1)
             }
         }
@@ -130,14 +127,12 @@ class AddPastilla : AppCompatActivity() {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
         }
-        val notificationPendingIntent = PendingIntent.getBroadcast(this, 1, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+        val notificationPendingIntent = PendingIntent.getBroadcast(this, 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-        // Notificación 2 minutos antes
         val notificationTime = calendar.timeInMillis - 2 * 60 * 1000
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, notificationPendingIntent)
-
-        // Alarma exacta a la hora indicada
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     }
+
 }
 

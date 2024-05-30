@@ -27,6 +27,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Iniciar el Foreground Service
+        val serviceIntent = Intent(this, ForegroundService::class.java)
+        startForegroundService(serviceIntent)
+
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
