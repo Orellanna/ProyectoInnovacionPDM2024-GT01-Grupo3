@@ -101,12 +101,12 @@ class AddPastilla : AppCompatActivity() {
     @SuppressLint("ScheduleExactAlarm")
     private fun setAlarm(pillName: String, pillDescription: String, frequency: Int, startTime: String) {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, AlarmReceiver::class.java).apply {
+
+        val notificationIntent = Intent(this, PastillaReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
         }
-
-        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val notificationPendingIntent = PendingIntent.getBroadcast(this, 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val startTimeParts = startTime.split(":").map { it.toInt() }
         val calendar = Calendar.getInstance().apply {
@@ -118,21 +118,34 @@ class AddPastilla : AppCompatActivity() {
             set(Calendar.MINUTE, startMinute)
             set(Calendar.SECOND, 0)
 
+            // Si la hora especificada ya ha pasado hoy, programar para el día siguiente
             if (now.after(this)) {
                 add(Calendar.DATE, 1)
             }
         }
 
-        val notificationIntent = Intent(this, PastillaReceiver::class.java).apply {
+        // Convertir la frecuencia de horas a milisegundos
+        val interval = frequency * 60 * 60 * 1000L
+
+        // Programar la notificación 2 minutos antes de la hora especificada
+        val notificationTime = calendar.timeInMillis - 1 * 60 * 1000
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, notificationPendingIntent)
+
+        // Programar la alarma exacta a la hora especificada
+        val alarmIntent = Intent(this, AlarmReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
         }
-        val notificationPendingIntent = PendingIntent.getBroadcast(this, 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-        val notificationTime = calendar.timeInMillis - 2 * 60 * 1000
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, notificationPendingIntent)
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+        val alarmPendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis, // Hora exacta
+            interval,
+            alarmPendingIntent
+        )
     }
+
+
 
 }
 
