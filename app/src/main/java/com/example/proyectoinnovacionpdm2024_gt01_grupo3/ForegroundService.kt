@@ -1,5 +1,6 @@
 package com.example.proyectoinnovacionpdm2024_gt01_grupo3
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,6 +15,7 @@ class ForegroundService : Service() {
 
     private val CHANNEL_ID = "ForegroundServiceChannel"
 
+    @SuppressLint("ForegroundServiceType")
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
@@ -43,7 +45,7 @@ class ForegroundService : Service() {
 
     private fun createNotification(): Notification {
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("MediRecordatorios")
+            .setContentTitle("Proyecto de Innovacion PDM115")
             .setContentText("La aplicación está activa para recordatorios.")
             .setSmallIcon(R.drawable.ic_pill)
             .build()

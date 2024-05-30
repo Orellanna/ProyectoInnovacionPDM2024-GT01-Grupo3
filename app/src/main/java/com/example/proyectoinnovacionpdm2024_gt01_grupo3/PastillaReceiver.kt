@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.PowerManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -18,11 +19,17 @@ class PastillaReceiver : BroadcastReceiver() {
 
     private val CHANNEL_ID = "pill_reminder_channel"
 
-    @SuppressLint("ScheduleExactAlarm")
+    @SuppressLint("ScheduleExactAlarm", "ServiceCast")
     override fun onReceive(context: Context, intent: Intent) {
         val pillName = intent.getStringExtra("pill_name") ?: "Pastilla"
         val pillDescription = intent.getStringExtra("pill_description") ?: "Hora de tomar la pastilla"
         val frequency = intent.getIntExtra("frequency", 1) // Frequency in hours
+        val alarmTime = intent.getLongExtra("alarm_time", System.currentTimeMillis())
+
+        // Wake lock to keep the device awake while processing the notification
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        val wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PastillaReceiver::WakeLock")
+        wakeLock.acquire(10*60*1000L /*10 minutes*/)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_pill)
@@ -49,14 +56,13 @@ class PastillaReceiver : BroadcastReceiver() {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
             putExtra("frequency", frequency)
+            putExtra("alarm_time", alarmTime + frequency * 3600000) // next alarm time in milliseconds
         }
         val pendingIntent = PendingIntent.getBroadcast(context, 1, nextNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-        val nextNotificationTime = Calendar.getInstance().apply {
-            add(Calendar.HOUR, frequency)
-            add(Calendar.MINUTE, -2)
-        }.timeInMillis
-
+        val nextNotificationTime = alarmTime + frequency * 3600000 - 2 * 60 * 1000
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextNotificationTime, pendingIntent)
+
+        wakeLock.release()
     }
 }

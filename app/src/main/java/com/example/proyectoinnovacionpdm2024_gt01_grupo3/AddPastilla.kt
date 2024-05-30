@@ -102,13 +102,6 @@ class AddPastilla : AppCompatActivity() {
     private fun setAlarm(pillName: String, pillDescription: String, frequency: Int, startTime: String) {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        val alarmIntent = Intent(this, AlarmReceiver::class.java).apply {
-            putExtra("pill_name", pillName)
-            putExtra("pill_description", pillDescription)
-            putExtra("frequency", frequency)
-        }
-        val alarmPendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
         val startTimeParts = startTime.split(":").map { it.toInt() }
         val calendar = Calendar.getInstance().apply {
             val now = Calendar.getInstance()
@@ -124,22 +117,31 @@ class AddPastilla : AppCompatActivity() {
             }
         }
 
+        // Intent and PendingIntent for the notification
         val notificationIntent = Intent(this, PastillaReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
             putExtra("frequency", frequency)
+            putExtra("alarm_time", calendar.timeInMillis)
         }
         val notificationPendingIntent = PendingIntent.getBroadcast(this, 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-        // Programar la primera notificación 2 minutos antes
+        // Intent and PendingIntent for the alarm
+        val alarmIntent = Intent(this, AlarmReceiver::class.java).apply {
+            putExtra("pill_name", pillName)
+            putExtra("pill_description", pillDescription)
+            putExtra("frequency", frequency)
+            putExtra("alarm_time", calendar.timeInMillis)
+        }
+        val alarmPendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        // Schedule the first notification 2 minutes before the start time
         val notificationTime = calendar.timeInMillis - 2 * 60 * 1000
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, notificationPendingIntent)
 
-        // Programar la primera alarma
+        // Schedule the first alarm at the start time
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alarmPendingIntent)
     }
-
-
 
 
 
