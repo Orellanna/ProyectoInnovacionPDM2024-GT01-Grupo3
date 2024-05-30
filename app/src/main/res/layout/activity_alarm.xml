@@ -4,22 +4,39 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <!-- Imagen de la alarma -->
+    <ImageView
+        android:id="@+id/imageViewAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_pill"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp" />
+
+    <!-- Título de la alarma -->
     <TextView
         android:id="@+id/textViewAlarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="¡Alarma!"
-        android:textSize="24sp"
+        android:text="¡Hora de Tomar la Pastilla!"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_below="@id/imageViewAlarm"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp" />
+        android:layout_marginTop="16dp" />
 
+    <!-- Botón para detener la alarma -->
     <Button
         android:id="@+id/buttonStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Detener Alarma"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:background="@color/colorAccent"
+        android:elevation="4dp"
         android:layout_below="@id/textViewAlarm"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp" />
-</RelativeLayout>
 
+</RelativeLayout>
