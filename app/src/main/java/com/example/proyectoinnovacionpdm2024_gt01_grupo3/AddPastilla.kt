@@ -67,11 +67,11 @@ class AddPastilla : AppCompatActivity() {
             val newRowId = db?.insert(ConexionDataBaseHelper.TABLE_PILLS, null, values)
 
             if (newRowId != -1L) {
-                Toast.makeText(this, "Pill saved with id: $newRowId", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Pastilla Guardada Id: $newRowId", Toast.LENGTH_SHORT).show()
                 setAlarm(name, description, frequency, startTime)
                 finish()
             } else {
-                Toast.makeText(this, "Error saving pill", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error al guardar la Pastilla", Toast.LENGTH_SHORT).show()
             }
         }
     }
