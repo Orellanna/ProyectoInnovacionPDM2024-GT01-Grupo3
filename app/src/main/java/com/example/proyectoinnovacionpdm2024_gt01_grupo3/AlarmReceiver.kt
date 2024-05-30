@@ -20,10 +20,10 @@ class AlarmReceiver : BroadcastReceiver() {
         val frequency = intent.getIntExtra("frequency", 1) // Frequency in hours
         val alarmTime = intent.getLongExtra("alarm_time", System.currentTimeMillis())
 
-        // Wake lock to keep the device awake while processing the alarm
+        //
         val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "AlarmReceiver::WakeLock")
-        wakeLock.acquire(10*60*1000L /*10 minutes*/)
+        wakeLock.acquire(10*60*1000L /*10 minutos*/)
 
         val alarmIntent = Intent(context, AlarmActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -38,7 +38,7 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
             putExtra("frequency", frequency)
-            putExtra("alarm_time", alarmTime + frequency * 3600000) // next alarm time in milliseconds
+            putExtra("alarm_time", alarmTime + frequency * 3600000) // siguiente alarma en milisegundos
         }
         val pendingIntent = PendingIntent.getBroadcast(context, 0, nextAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 

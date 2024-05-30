@@ -4,14 +4,17 @@ import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.app.PendingIntent
+import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -23,6 +26,7 @@ class AddPastilla : AppCompatActivity() {
     private lateinit var editTextEndDate: EditText
     private val calendar = Calendar.getInstance()
 
+    private lateinit var editTextStartTime: TextInputEditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_pastilla)
@@ -33,13 +37,19 @@ class AddPastilla : AppCompatActivity() {
         val editTextDescription = findViewById<EditText>(R.id.editTextDescription)
         editTextStartDate = findViewById(R.id.editTextStartDate)
         editTextEndDate = findViewById(R.id.editTextEndDate)
+        editTextStartTime = findViewById(R.id.editTextStartTime)
         val editTextFrequency = findViewById<EditText>(R.id.editTextFrequency)
-        val editTextStartTime = findViewById<EditText>(R.id.editTextStartTime)
         val buttonSave = findViewById<Button>(R.id.buttonSave)
+
 
         editTextStartDate.setOnClickListener {
             showDatePickerDialog(editTextStartDate)
         }
+
+        editTextStartTime.setOnClickListener {
+            showTimePickerDialog()
+        }
+
 
         editTextEndDate.setOnClickListener {
             showDatePickerDialog(editTextEndDate)
@@ -92,6 +102,26 @@ class AddPastilla : AppCompatActivity() {
         ).show()
     }
 
+    private fun showTimePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val hourOfDay = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        val timePickerDialog = TimePickerDialog(
+            this,
+            TimePickerDialog.OnTimeSetListener { view: TimePicker?, hourOfDay: Int, minute: Int ->
+                val formattedHour = if (hourOfDay < 10) "0$hourOfDay" else hourOfDay.toString()
+                val formattedMinute = if (minute < 10) "0$minute" else minute.toString()
+                editTextStartTime.setText("$formattedHour:$formattedMinute")
+            },
+            hourOfDay,
+            minute,
+            true
+        )
+
+        timePickerDialog.show()
+    }
+
     private fun updateDateInView(editText: EditText) {
         val myFormat = "yyyy-MM-dd"
         val sdf = SimpleDateFormat(myFormat, Locale.US)
@@ -117,7 +147,7 @@ class AddPastilla : AppCompatActivity() {
             }
         }
 
-        // Intent and PendingIntent for the notification
+
         val notificationIntent = Intent(this, PastillaReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
@@ -126,7 +156,7 @@ class AddPastilla : AppCompatActivity() {
         }
         val notificationPendingIntent = PendingIntent.getBroadcast(this, 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-        // Intent and PendingIntent for the alarm
+
         val alarmIntent = Intent(this, AlarmReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
@@ -135,11 +165,11 @@ class AddPastilla : AppCompatActivity() {
         }
         val alarmPendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-        // Schedule the first notification 2 minutes before the start time
+
         val notificationTime = calendar.timeInMillis - 2 * 60 * 1000
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, notificationPendingIntent)
 
-        // Schedule the first alarm at the start time
+
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alarmPendingIntent)
     }
 

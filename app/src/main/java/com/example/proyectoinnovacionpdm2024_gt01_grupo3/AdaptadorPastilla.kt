@@ -26,7 +26,7 @@ class PillAdapter(private val pills: List<Pill>) : RecyclerView.Adapter<PillAdap
         holder.nameTextView.text = currentPill.name
         holder.descriptionTextView.text = currentPill.description
         holder.datesTextView.text = "Desde ${currentPill.startDate} hasta ${currentPill.endDate}"
-        holder.frequencyTextView.text = "Cada ${currentPill.frequency} horas a las: ${currentPill.startTime}"
+        holder.frequencyTextView.text = "Cada ${currentPill.frequency} horas desde las: ${currentPill.startTime}"
     }
 
     override fun getItemCount() = pills.size
