@@ -36,4 +36,11 @@ La aplicación está dirigida a personas que necesitan tomar múltiples pastilla
 
 ## Capturas de Pantalla
 
+<p align="center">
+  <img src="app/src/main/res/drawable/cap1.jpg" alt="ClinicaAcupuntura" width="200" height="200">
+</p>
+
+<p align="center">
+  <img src="app/src/main/res/drawable/cap2.jpg" alt="ClinicaAcupuntura" width="200" height="200">
+</p>
 
