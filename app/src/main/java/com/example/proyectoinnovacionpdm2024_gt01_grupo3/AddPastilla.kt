@@ -147,7 +147,6 @@ class AddPastilla : AppCompatActivity() {
             }
         }
 
-
         val notificationIntent = Intent(this, PastillaReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
@@ -155,7 +154,6 @@ class AddPastilla : AppCompatActivity() {
             putExtra("alarm_time", calendar.timeInMillis)
         }
         val notificationPendingIntent = PendingIntent.getBroadcast(this, 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
 
         val alarmIntent = Intent(this, AlarmReceiver::class.java).apply {
             putExtra("pill_name", pillName)
@@ -165,10 +163,8 @@ class AddPastilla : AppCompatActivity() {
         }
         val alarmPendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-
         val notificationTime = calendar.timeInMillis - 2 * 60 * 1000
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, notificationPendingIntent)
-
 
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alarmPendingIntent)
     }

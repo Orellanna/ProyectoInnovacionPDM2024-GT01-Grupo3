@@ -19,7 +19,7 @@ class PastillaReceiver : BroadcastReceiver() {
 
     private val CHANNEL_ID = "pill_reminder_channel"
 
-    @SuppressLint("ScheduleExactAlarm", "ServiceCast")
+    @SuppressLint("ScheduleExactAlarm", "ServiceCast", "UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context, intent: Intent) {
         val pillName = intent.getStringExtra("pill_name") ?: "Pastilla"
         val pillDescription = intent.getStringExtra("pill_description") ?: "Hora de tomar la pastilla"
