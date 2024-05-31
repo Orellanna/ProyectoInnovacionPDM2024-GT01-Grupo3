@@ -19,6 +19,12 @@ La aplicación está dirigida a personas que necesitan tomar múltiples pastilla
 - 🔔 **Notificaciones**: Recibe alertas oportunas para cada toma de medicamento.
 - 🎨 **Interfaz Moderna**: Utiliza Material Design para una experiencia de usuario intuitiva y atractiva.
 
+## Tecnologías Utilizadas
+
+- ![Kotlin](https://img.shields.io/badge/Kotlin-%230095D5.svg?style=for-the-badge&logo=kotlin&logoColor=white) **Kotlin**
+- ![Android](https://img.shields.io/badge/Android-%233DDC84.svg?style=for-the-badge&logo=android&logoColor=white) **Android**
+- ![SQLite](https://img.shields.io/badge/SQLite-%23003B57.svg?style=for-the-badge&logo=sqlite&logoColor=white) **SQLite**
+
 ## Librerías Utilizadas
 
 - 🛎️ **NotificationManager**: Gestión de notificaciones para alertas.
