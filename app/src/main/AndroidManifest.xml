@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -17,7 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProyectoInnovacionPDM2024GT01Grupo3"
         tools:targetApi="31">
-
+        <activity
+            android:name=".DetallePastilla"
+            android:exported="false" />
         <activity
             android:name=".AlarmActivity"
             android:exported="false" />
@@ -30,25 +32,23 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".AlarmReceiver"
             android:exported="true"
-            android:permission="android.permission.BROADCAST_STICKY"/>
+            android:permission="android.permission.BROADCAST_STICKY" />
 
         <activity
             android:name=".AddPastilla"
             android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-        </activity>
-
+            android:exported="true"></activity>
         <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
