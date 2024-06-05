@@ -36,4 +36,14 @@ class ConexionDataBaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.execSQL("DROP TABLE IF EXISTS $TABLE_PILLS")
         onCreate(db)
     }
+
+    //Funcion para eliminar una pastilla
+    fun deletePill(id: Int): Boolean {
+        val db = this.writableDatabase
+        val selection = "$COLUMN_ID = ?"
+        val selectionArgs = arrayOf(id.toString())
+        val deletedRows = db.delete(TABLE_PILLS, selection, selectionArgs)
+        db.close()
+        return deletedRows > 0
+    }
 }
