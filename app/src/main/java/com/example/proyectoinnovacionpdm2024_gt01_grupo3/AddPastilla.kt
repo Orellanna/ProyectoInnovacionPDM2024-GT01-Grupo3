@@ -9,6 +9,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TimePicker
@@ -147,27 +148,37 @@ class AddPastilla : AppCompatActivity() {
             }
         }
 
+        val alarmTimeInMillis = calendar.timeInMillis
+
         val notificationIntent = Intent(this, PastillaReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
             putExtra("frequency", frequency)
-            putExtra("alarm_time", calendar.timeInMillis)
+            putExtra("alarm_time", alarmTimeInMillis)
         }
-        val notificationPendingIntent = PendingIntent.getBroadcast(this, 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        // Utiliza alarmTimeInMillis como requestCode único
+        val notificationPendingIntent = PendingIntent.getBroadcast(
+            this, alarmTimeInMillis.toInt(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         val alarmIntent = Intent(this, AlarmReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
             putExtra("frequency", frequency)
-            putExtra("alarm_time", calendar.timeInMillis)
+            putExtra("alarm_time", alarmTimeInMillis)
         }
-        val alarmPendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-        val notificationTime = calendar.timeInMillis - 2 * 60 * 1000
+        // Utiliza alarmTimeInMillis como requestCode único
+        val alarmPendingIntent = PendingIntent.getBroadcast(
+            this, (alarmTimeInMillis + 1).toInt(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notificationTime = alarmTimeInMillis - 2 * 60 * 1000
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, notificationPendingIntent)
-
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alarmPendingIntent)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTimeInMillis, alarmPendingIntent)
     }
+
 
 
 

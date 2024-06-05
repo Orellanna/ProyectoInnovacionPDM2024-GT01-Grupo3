@@ -3,6 +3,7 @@ package com.example.proyectoinnovacionpdm2024_gt01_grupo3
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -102,17 +103,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            val existingChannel = notificationManager.getNotificationChannel(CHANNEL_ID)
-            if (existingChannel == null) {
-                val name = "Pill Reminder"
-                val descriptionText = "Channel for Pill Reminder notifications"
-                val importance = NotificationManager.IMPORTANCE_HIGH
-                val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                    description = descriptionText
-                }
-                notificationManager.createNotificationChannel(channel)
+            val name = "Pill Reminder"
+            val descriptionText = "Channel for Pill Reminder notifications"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
             }
+            val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 

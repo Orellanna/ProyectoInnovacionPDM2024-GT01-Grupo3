@@ -3,6 +3,7 @@ package com.example.proyectoinnovacionpdm2024_gt01_grupo3
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -16,53 +17,25 @@ import androidx.core.app.NotificationManagerCompat
 import java.util.Calendar
 
 class PastillaReceiver : BroadcastReceiver() {
-
-    private val CHANNEL_ID = "pill_reminder_channel"
-
-    @SuppressLint("ScheduleExactAlarm", "ServiceCast", "UnsafeProtectedBroadcastReceiver")
+    @SuppressLint("ServiceCast")
     override fun onReceive(context: Context, intent: Intent) {
         val pillName = intent.getStringExtra("pill_name") ?: "Pastilla"
-        val pillDescription = intent.getStringExtra("pill_description") ?: "Hora de tomar la pastilla"
-        val frequency = intent.getIntExtra("frequency", 1) // Frequency in hours
-        val alarmTime = intent.getLongExtra("alarm_time", System.currentTimeMillis())
+        val pillDescription = intent.getStringExtra("pill_description") ?: "Recordatorio de pastilla"
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Wake lock to keep the device awake while processing the notification
-        val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
-        val wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PastillaReceiver::WakeLock")
-        wakeLock.acquire(10*60*1000L /*10 minutes*/)
+        val notificationIntent = Intent(context, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(context, "pill_reminder_channel")
             .setSmallIcon(R.drawable.ic_pill)
             .setContentTitle(pillName)
             .setContentText(pillDescription)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
 
-        with(NotificationManagerCompat.from(context)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    return
-                }
-            }
-            notify(123, builder.build())
-        }
-
-        // Reprogramar la próxima notificación
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val nextNotificationIntent = Intent(context, PastillaReceiver::class.java).apply {
-            putExtra("pill_name", pillName)
-            putExtra("pill_description", pillDescription)
-            putExtra("frequency", frequency)
-            putExtra("alarm_time", alarmTime + frequency * 3600000) // next alarm time in milliseconds
-        }
-        val pendingIntent = PendingIntent.getBroadcast(context, 1, nextNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-        val nextNotificationTime = alarmTime + frequency * 3600000 - 2 * 60 * 1000
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextNotificationTime, pendingIntent)
-
-        wakeLock.release()
+        notificationManager.notify(0, notification)
     }
 }
+
