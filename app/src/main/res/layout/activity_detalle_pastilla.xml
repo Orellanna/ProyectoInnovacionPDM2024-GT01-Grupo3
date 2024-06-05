@@ -31,7 +31,8 @@
                 android:textColor="?attr/colorOnPrimary"
                 app:cornerRadius="8dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:backgroundTint="@android:color/holo_red_dark" />
+                android:backgroundTint="@android:color/holo_red_dark"
+                android:onClick="onDeleteClick"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewNameDetail"
