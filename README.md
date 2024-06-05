@@ -38,11 +38,13 @@ La aplicación está dirigida a personas que necesitan tomar múltiples pastilla
 
 <table>
   <tr>
-    <td><img src="app/src/main/res/drawable/cap1.jpg" alt="Captura 1" width="450" height="900"></td>
-    <td><img src="app/src/main/res/drawable/cap2.jpg" alt="Captura 2" width="450" height="900"></td>
-    <td><img src="app/src/main/res/drawable/cap3.jpg" alt="Captura 3" width="450" height="900"></td>
-    <td><img src="app/src/main/res/drawable/cap4.jpg" alt="Captura 4" width="450" height="900"></td>
-    <td><img src="app/src/main/res/drawable/cap6.jpg" alt="Captura 6" width="450" height="900"></td>
+    <td><img src="app/src/main/res/drawable/cap1.jpg" alt="Captura 1" width="300" height="600"></td>
+    <td><img src="app/src/main/res/drawable/cap2.jpg" alt="Captura 2" width="300" height="600"></td>
+    <td><img src="app/src/main/res/drawable/cap3.jpg" alt="Captura 3" width="300" height="600"></td>
+  </tr>
+  <tr>
+    <td><img src="app/src/main/res/drawable/cap4.jpg" alt="Captura 4" width="300" height="600"></td>
+    <td><img src="app/src/main/res/drawable/cap6.jpg" alt="Captura 6" width="300" height="600"></td>
   </tr>
 </table>
 
