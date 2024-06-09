@@ -3,9 +3,9 @@ package com.example.proyectoinnovacionpdm2024_gt01_grupo3
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
-
 
 class DetallePastilla : AppCompatActivity() {
     private lateinit var dbHelper: ConexionDataBaseHelper
@@ -46,13 +46,18 @@ class DetallePastilla : AppCompatActivity() {
         buttonDelete.setOnClickListener {
             if (pillId != -1L) {
                 // Eliminar la pastilla de la base de datos
-                dbHelper.deletePill(pillId.toInt())
+                val isDeleted = dbHelper.deletePill(pillId.toInt())
+                if (isDeleted) {
+                    Toast.makeText(this, "Pastilla eliminada correctamente", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Error al eliminar la pastilla", Toast.LENGTH_SHORT).show()
+                }
                 // Finalizar la actividad actual
                 finish()
             } else {
                 // ID de pastilla no válido, mostrar un mensaje de error o manejar el caso según corresponda
+                Toast.makeText(this, "ID de pastilla no válido", Toast.LENGTH_SHORT).show()
             }
         }
     }
 }
-

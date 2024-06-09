@@ -41,6 +41,7 @@ class PillAdapter(private val pills: List<Pill>) : RecyclerView.Adapter<PillAdap
                 putExtra("endDate", currentPill.endDate)
                 putExtra("frequency", currentPill.frequency)
                 putExtra("startTime", currentPill.startTime)
+                putExtra("PILL_ID", currentPill.id)
             }
             context.startActivity(intent)
         }
