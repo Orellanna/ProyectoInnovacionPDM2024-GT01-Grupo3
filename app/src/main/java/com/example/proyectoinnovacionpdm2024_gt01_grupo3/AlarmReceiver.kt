@@ -6,10 +6,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.media.MediaPlayer
 import android.os.PowerManager
-import android.os.Vibrator
-import android.util.Log
 import java.util.Calendar
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -23,30 +20,53 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "AlarmReceiver::WakeLock")
-        wakeLock.acquire(10*60*1000L /*10 minutos*/)
+        wakeLock.acquire(10 * 60 * 1000L /*10 minutos*/)
 
         val alarmIntent = Intent(context, AlarmActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
         }
-        context.startActivity(alarmIntent)
 
-        // Reprogramar la próxima alarma
+        context.startActivity(alarmIntent)
+        wakeLock.release()
+
+        reprogramAlarm(context, pillName, pillDescription, frequency, alarmTime)
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
+    private fun reprogramAlarm(context: Context, pillName: String, pillDescription: String, frequency: Int, alarmTimeInMillis: Long) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val nextAlarmIntent = Intent(context, AlarmReceiver::class.java).apply {
+
+        val nextAlarmTimeInMillis = alarmTimeInMillis + frequency * 60 * 60 * 1000
+
+        val alarmIntent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
             putExtra("frequency", frequency)
-            putExtra("alarm_time", alarmTime + frequency * 3600000) // siguiente alarma en milisegundos
+            putExtra("alarm_time", nextAlarmTimeInMillis)
         }
 
-        val nextAlarmTime = alarmTime + frequency * 3600000
-        val pendingIntent = PendingIntent.getBroadcast(context, nextAlarmTime.toInt(), nextAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val alarmPendingIntent = PendingIntent.getBroadcast(
+            context, (nextAlarmTimeInMillis + 1).toInt(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextAlarmTime, pendingIntent)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextAlarmTimeInMillis, alarmPendingIntent)
 
-        wakeLock.release()
+        // Schedule the next notification 2 minutes before the next alarm
+        val nextNotificationTimeInMillis = nextAlarmTimeInMillis - 2 * 60 * 1000
+
+        val notificationIntent = Intent(context, PastillaReceiver::class.java).apply {
+            putExtra("pill_name", pillName)
+            putExtra("pill_description", pillDescription)
+            putExtra("frequency", frequency)
+            putExtra("alarm_time", nextAlarmTimeInMillis)
+        }
+
+        val notificationPendingIntent = PendingIntent.getBroadcast(
+            context, nextNotificationTimeInMillis.toInt(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextNotificationTimeInMillis, notificationPendingIntent)
     }
 }
-

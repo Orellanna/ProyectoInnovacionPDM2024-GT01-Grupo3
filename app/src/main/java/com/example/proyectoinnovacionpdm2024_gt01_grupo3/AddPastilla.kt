@@ -79,7 +79,7 @@ class AddPastilla : AppCompatActivity() {
 
             if (newRowId != -1L) {
                 Toast.makeText(this, "Pastilla Guardada Id: $newRowId", Toast.LENGTH_SHORT).show()
-                setAlarm(name, description, frequency, startTime)
+                scheduleNotificationsAndAlarms(name, description, frequency, startTime)
                 finish()
             } else {
                 Toast.makeText(this, "Error al guardar la Pastilla", Toast.LENGTH_SHORT).show()
@@ -130,7 +130,7 @@ class AddPastilla : AppCompatActivity() {
     }
 
     @SuppressLint("ScheduleExactAlarm")
-    private fun setAlarm(pillName: String, pillDescription: String, frequency: Int, startTime: String) {
+    private fun scheduleNotificationsAndAlarms(pillName: String, pillDescription: String, frequency: Int, startTime: String) {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val startTimeParts = startTime.split(":").map { it.toInt() }
@@ -150,6 +150,15 @@ class AddPastilla : AppCompatActivity() {
 
         val alarmTimeInMillis = calendar.timeInMillis
 
+        scheduleNotification(pillName, pillDescription, frequency, alarmTimeInMillis)
+        scheduleAlarm(pillName, pillDescription, frequency, alarmTimeInMillis)
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
+    private fun scheduleNotification(pillName: String, pillDescription: String, frequency: Int, alarmTimeInMillis: Long) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val notificationTime = alarmTimeInMillis - 2 * 60 * 1000
         val notificationIntent = Intent(this, PastillaReceiver::class.java).apply {
             putExtra("pill_name", pillName)
             putExtra("pill_description", pillDescription)
@@ -157,10 +166,16 @@ class AddPastilla : AppCompatActivity() {
             putExtra("alarm_time", alarmTimeInMillis)
         }
 
-        // Utiliza alarmTimeInMillis como requestCode único
         val notificationPendingIntent = PendingIntent.getBroadcast(
-            this, alarmTimeInMillis.toInt(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            this, notificationTime.toInt(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, notificationPendingIntent)
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
+    private fun scheduleAlarm(pillName: String, pillDescription: String, frequency: Int, alarmTimeInMillis: Long) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val alarmIntent = Intent(this, AlarmReceiver::class.java).apply {
             putExtra("pill_name", pillName)
@@ -169,18 +184,10 @@ class AddPastilla : AppCompatActivity() {
             putExtra("alarm_time", alarmTimeInMillis)
         }
 
-        // Utiliza alarmTimeInMillis como requestCode único
         val alarmPendingIntent = PendingIntent.getBroadcast(
             this, (alarmTimeInMillis + 1).toInt(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notificationTime = alarmTimeInMillis - 2 * 60 * 1000
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, notificationPendingIntent)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTimeInMillis, alarmPendingIntent)
     }
-
-
-
-
 }
-

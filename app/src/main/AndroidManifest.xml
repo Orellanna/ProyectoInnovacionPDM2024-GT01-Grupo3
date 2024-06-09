@@ -17,6 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProyectoInnovacionPDM2024GT01Grupo3"
         tools:targetApi="31">
+
         <activity
             android:name=".EliminarRecordatorioPastilla"
             android:exported="false" />
@@ -29,16 +30,14 @@
 
         <receiver
             android:name=".PastillaReceiver"
-            android:exported="true"
-            android:permission="android.permission.BROADCAST_STICKY">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <receiver
             android:name=".AlarmReceiver"
-            android:exported="true"
-            android:permission="android.permission.BROADCAST_STICKY" />
+            android:exported="true" />
 
         <activity
             android:name=".AddPastilla"
@@ -51,7 +50,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -60,5 +58,4 @@
             android:name=".ForegroundService"
             android:exported="false" />
     </application>
-
 </manifest>
