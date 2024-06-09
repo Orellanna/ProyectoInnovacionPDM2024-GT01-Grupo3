@@ -47,7 +47,7 @@ class ForegroundService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Proyecto de Innovacion PDM115")
             .setContentText("La aplicación está activa para recordatorios.")
-            .setSmallIcon(R.drawable.ic_pill)
+            .setSmallIcon(R.drawable.ic_pasti)
             .build()
     }
 }

@@ -38,7 +38,7 @@ class PastillaReceiver : BroadcastReceiver() {
         }
 
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_pill)
+            .setSmallIcon(R.drawable.ic_pasti)
             .setContentTitle(pillName)
             .setContentText(pillDescription)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
